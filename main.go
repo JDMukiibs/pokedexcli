@@ -10,9 +10,9 @@ import (
 )
 
 type cliCommand struct {
-	name string
+	name        string
 	description string
-	callback func() error
+	callback    func() error
 }
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 }
 
 func getCommandMap() map[string]cliCommand {
-	return map[string]cliCommand {
+	return map[string]cliCommand{
 		"help": {
 			name:        "help",
 			description: "Displays a help message",
