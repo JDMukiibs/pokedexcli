@@ -16,27 +16,43 @@ type cliCommand struct {
 }
 
 func main() {
-	var exitPokedex bool
+	var exitPokedex error
+	commands := getCommandMap()
 	log.SetPrefix("Pokedex: ")
 	log.SetFlags(0)
 	scanner := bufio.NewScanner(os.Stdin)
 
-	for !exitPokedex {
-		fmt.Print("pokedex > ")
-		scanner.Scan()
-		inputError := scanner.Err()
-		for inputError != nil {
-			log.Println("Error reading input command. Please enter a recognized command or enter 'help' to see available commands.")
-			fmt.Print("pokedex > ")
-			scanner.Scan()
-			inputError = scanner.Err()
+	for exitPokedex == nil {
+		input := getUserInput(scanner)
+		userInput := strings.TrimSpace(input)
+		command, ok := commands[userInput]
+		for !ok {
+			log.Println("Unrecognized command. Please enter a recognized command or enter 'help' to see available commands.")
+			userInput = strings.TrimSpace(getUserInput(bufio.NewScanner(os.Stdin)))
+			command, ok = commands[userInput]
 		}
-		command := strings.TrimSpace(scanner.Text())
-		if command == "exit" {
-			exitPokedex = true
+		switch command.name {
+		case "help":
+			command.callback()
 			continue
+		case "exit":
+			exitPokedex = command.callback()
 		}
-		fmt.Println("You entered: ", command)
+	}
+}
+
+func getUserInput(scanner *bufio.Scanner) string {
+	for {
+		fmt.Print("pokedex > ")
+		if scanner.Scan() {
+			input := scanner.Text()
+			return input
+		} else {
+			inputError := scanner.Err()
+			if inputError != nil {
+				log.Println("Error reading input command. Please enter a recognized command or enter 'help' to see available commands.")
+			}
+		}
 	}
 }
 
@@ -57,11 +73,12 @@ func getCommandMap() map[string]cliCommand {
 
 func commandHelp() error {
 	fmt.Println("\nWelcome to the Pokedex!")
-	fmt.Println("Usage:")
+	fmt.Print("\nUsage:\n\n")
 	commands := getCommandMap()
 	for _, command := range commands {
-		fmt.Println(command.name, ": ", command.description)
+		fmt.Printf("%s: %s\n", command.name, command.description)
 	}
+	fmt.Println()
 	return nil
 }
 
