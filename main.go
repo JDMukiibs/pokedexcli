@@ -120,7 +120,7 @@ func commandExit(urlTracker *pokeApiUrlTracker) error {
 }
 
 func commandMap(urlTracker *pokeApiUrlTracker) error {
-	response, err := pokeapi.GetLocations(urlTracker.next)
+	response, err := pokeapi.GetLocationAreas(urlTracker.next)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func commandMap(urlTracker *pokeApiUrlTracker) error {
 }
 
 func commandMapBack(urlTracker *pokeApiUrlTracker) error {
-	response, err := pokeapi.GetLocations(urlTracker.previous)
+	response, err := pokeapi.GetLocationAreas(urlTracker.previous)
 	if err != nil {
 		return err
 	}
