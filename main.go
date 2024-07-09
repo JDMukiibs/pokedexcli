@@ -75,7 +75,7 @@ func getUserInput(scanner *bufio.Scanner) string {
 func initializePokeApiTracker() pokeApiUrlTracker {
 	return pokeApiUrlTracker{
 		previous: "",
-		next: "https://pokeapi.co/api/v2/location-area/",
+		next:     "https://pokeapi.co/api/v2/location-area/",
 	}
 }
 
