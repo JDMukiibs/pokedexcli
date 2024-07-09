@@ -19,7 +19,7 @@ func main() {
 		scanner.Scan()
 		inputError := scanner.Err()
 		for inputError != nil {
-			log.Println("Unrecognized command. Please enter a recognized command or enter 'help' to see available commands.")
+			log.Println("Error reading input command. Please enter a recognized command or enter 'help' to see available commands.")
 			fmt.Print("pokedex > ")
 			scanner.Scan()
 			inputError = scanner.Err()
