@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -55,19 +56,50 @@ func commandExit(urlTracker *pokeApiUrlTracker) error {
 }
 
 func commandMap(urlTracker *pokeApiUrlTracker) error {
-	response, err := pokeapi.GetLocationAreas(urlTracker.next)
+	if len(urlTracker.next) == 0 {
+		return errors.New("currently on last page of results. no more results to show")
+	}
+	locationAreas, err := pokeapi.GetLocationAreas(urlTracker.next)
 	if err != nil {
 		return err
 	}
-	fmt.Println(response)
+	// Update urlTracker to have a new next and previous
+	if locationAreas.Previous == nil {
+		urlTracker.previous = ""
+	} else {
+		urlTracker.previous = *locationAreas.Previous	
+	}
+	if locationAreas.Next == nil {
+		urlTracker.next = ""
+	} else {
+		urlTracker.next = *locationAreas.Next	
+	}
+	// Print out our location areas
+	for _, area := range locationAreas.Results {
+		fmt.Println(area.Name)
+	}
 	return nil
 }
 
 func commandMapBack(urlTracker *pokeApiUrlTracker) error {
-	response, err := pokeapi.GetLocationAreas(urlTracker.previous)
+	if len(urlTracker.previous) == 0 {
+		return errors.New("currently on first page of results. no previous results to show")
+	}
+	locationAreas, err := pokeapi.GetLocationAreas(urlTracker.previous)
 	if err != nil {
 		return err
 	}
-	fmt.Println(response)
+	// Update urlTracker to have a new next and previous
+	// Need to watch out for if we go back to the first page
+	urlTracker.next = *locationAreas.Next
+	if locationAreas.Previous == nil {
+		urlTracker.previous = ""
+	} else {
+		urlTracker.previous = *locationAreas.Previous	
+	}
+	// Print out our location areas
+	for _, area := range locationAreas.Results {
+		fmt.Println(area.Name)
+	}
 	return nil
 }

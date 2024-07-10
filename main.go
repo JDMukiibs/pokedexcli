@@ -16,7 +16,7 @@ type pokeApiUrlTracker struct {
 
 func main() {
 	commands := getCommandMap()
-	urlTracker := initializePokeApiTracker()
+	urlTracker := initializePokeApiUrlTracker()
 	log.SetPrefix("Pokedex: ")
 	log.SetFlags(0)
 	scanner := bufio.NewScanner(os.Stdin)
@@ -29,7 +29,10 @@ func main() {
 			userInput = getUserInput(scanner)
 			command, ok = commands[userInput]
 		}
-		command.callback(&urlTracker)
+		err := command.callback(&urlTracker)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
@@ -53,7 +56,7 @@ func getUserInput(scanner *bufio.Scanner) string {
 	}
 }
 
-func initializePokeApiTracker() pokeApiUrlTracker {
+func initializePokeApiUrlTracker() pokeApiUrlTracker {
 	return pokeApiUrlTracker{
 		previous: "",
 		next:     "https://pokeapi.co/api/v2/location-area/",
