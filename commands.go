@@ -4,14 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-
-	"github.com/jdmukiibs/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(urlTracker *pokeApiUrlTracker) error
+	callback    func(config *config) error
 }
 
 func getCommandMap() map[string]cliCommand {
@@ -39,7 +37,7 @@ func getCommandMap() map[string]cliCommand {
 	}
 }
 
-func commandHelp(urlTracker *pokeApiUrlTracker) error {
+func commandHelp(config *config) error {
 	fmt.Println("\nWelcome to the Pokedex!")
 	fmt.Print("\nUsage:\n\n")
 	commands := getCommandMap()
@@ -50,30 +48,19 @@ func commandHelp(urlTracker *pokeApiUrlTracker) error {
 	return nil
 }
 
-func commandExit(urlTracker *pokeApiUrlTracker) error {
+func commandExit(config *config) error {
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(urlTracker *pokeApiUrlTracker) error {
-	if len(urlTracker.next) == 0 {
-		return errors.New("currently on last page of results. no more results to show")
-	}
-	locationAreas, err := pokeapi.GetLocationAreas(urlTracker.next)
+func commandMap(cfg *config) error {
+	locationAreas, err := cfg.pokeApiClient.GetLocationAreas(cfg.nextUrl)
 	if err != nil {
 		return err
 	}
 	// Update urlTracker to have a new next and previous
-	if locationAreas.Previous == nil {
-		urlTracker.previous = ""
-	} else {
-		urlTracker.previous = *locationAreas.Previous	
-	}
-	if locationAreas.Next == nil {
-		urlTracker.next = ""
-	} else {
-		urlTracker.next = *locationAreas.Next	
-	}
+	cfg.nextUrl = locationAreas.Next
+	cfg.previousUrl = locationAreas.Previous
 	// Print out our location areas
 	for _, area := range locationAreas.Results {
 		fmt.Println(area.Name)
@@ -81,22 +68,18 @@ func commandMap(urlTracker *pokeApiUrlTracker) error {
 	return nil
 }
 
-func commandMapBack(urlTracker *pokeApiUrlTracker) error {
-	if len(urlTracker.previous) == 0 {
+func commandMapBack(cfg *config) error {
+	if cfg.previousUrl == nil {
 		return errors.New("currently on first page of results. no previous results to show")
 	}
-	locationAreas, err := pokeapi.GetLocationAreas(urlTracker.previous)
+
+	locationAreas, err := cfg.pokeApiClient.GetLocationAreas(cfg.previousUrl)
 	if err != nil {
 		return err
 	}
 	// Update urlTracker to have a new next and previous
-	// Need to watch out for if we go back to the first page
-	urlTracker.next = *locationAreas.Next
-	if locationAreas.Previous == nil {
-		urlTracker.previous = ""
-	} else {
-		urlTracker.previous = *locationAreas.Previous	
-	}
+	cfg.nextUrl = locationAreas.Next
+	cfg.previousUrl = locationAreas.Previous
 	// Print out our location areas
 	for _, area := range locationAreas.Results {
 		fmt.Println(area.Name)

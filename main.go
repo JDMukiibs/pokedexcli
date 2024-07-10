@@ -6,17 +6,23 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/jdmukiibs/internal/pokeapi"
 )
 
-// TODO (Joshua): Update struct to keep track of starting id for a location-area
-type pokeApiUrlTracker struct {
-	previous string
-	next     string
+type config struct {
+	pokeApiClient pokeapi.Client
+	previousUrl   *string
+	nextUrl       *string
 }
 
 func main() {
 	commands := getCommandMap()
-	urlTracker := initializePokeApiUrlTracker()
+	pokeApiClient := pokeapi.NewClient(5 * time.Second)
+	cfg := &config{
+		pokeApiClient: pokeApiClient,
+	}
 	log.SetPrefix("Pokedex: ")
 	log.SetFlags(0)
 	scanner := bufio.NewScanner(os.Stdin)
@@ -29,7 +35,7 @@ func main() {
 			userInput = getUserInput(scanner)
 			command, ok = commands[userInput]
 		}
-		err := command.callback(&urlTracker)
+		err := command.callback(cfg)
 		if err != nil {
 			log.Println(err)
 		}
@@ -53,12 +59,5 @@ func getUserInput(scanner *bufio.Scanner) string {
 				log.Println("Error reading input command. Please enter a recognized command or enter 'help' to see available commands.")
 			}
 		}
-	}
-}
-
-func initializePokeApiUrlTracker() pokeApiUrlTracker {
-	return pokeApiUrlTracker{
-		previous: "",
-		next:     "https://pokeapi.co/api/v2/location-area/",
 	}
 }
