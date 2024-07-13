@@ -34,6 +34,11 @@ func getCommandMap() map[string]cliCommand {
 			description: "Displays the previous 20 locations.",
 			callback:    commandMapBack,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Takes the name of a location area as an argument and lists all of the Pokémon in the requested area",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -85,4 +90,9 @@ func commandMapBack(cfg *config) error {
 		fmt.Println(area.Name)
 	}
 	return nil
+}
+
+func commandExplore(config *config) error {
+	// TODO: Implement explore command
+	return errors.New("not implemented")
 }

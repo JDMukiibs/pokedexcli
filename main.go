@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jdmukiibs/internal/pokeapi"
+	"github.com/jdmukiibs/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
@@ -19,7 +19,7 @@ type config struct {
 
 func main() {
 	commands := getCommandMap()
-	pokeApiClient := pokeapi.NewClient(5 * time.Second)
+	pokeApiClient := pokeapi.NewClient(5*time.Second, 5*time.Minute)
 	cfg := &config{
 		pokeApiClient: pokeApiClient,
 	}

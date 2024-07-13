@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -24,17 +25,33 @@ type LocationAreas struct {
 }
 
 // GetLocationAreas issues a GET to the specified endpoint that
-// has the next or previous location areas using our Client. 
+// has the next or previous location areas using our Client.
 // If the request is successful, continue to unmarshal
 // and return a non-empty LocationAreas struct with a nil error.
 // Otherwise, log any errors encountered along the flow
 func (c *Client) GetLocationAreas(pageURL *string) (LocationAreas, error) {
-	url := baseURL + "/location-area"
+	fullURL := baseURL + "/location-area"
 	if pageURL != nil {
-		url = *pageURL
+		fullURL = *pageURL
 	}
 
-	request, err := http.NewRequest("GET", url, nil)
+	// check our cache
+	dat, ok := c.cache.Get(fullURL)
+	if ok {
+		// cache hit
+		fmt.Println("cache hit")
+		locationAreasResponse := LocationAreas{}
+		err := json.Unmarshal(dat, &locationAreasResponse)
+		if err != nil {
+			log.Println("Failed to unmarshal response from pokeapi. Try again later")
+			return LocationAreas{}, err
+		}
+
+		return locationAreasResponse, nil
+	}
+	fmt.Println("cache miss")
+
+	request, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
 		log.Println(err)
 		return LocationAreas{}, err
@@ -47,7 +64,6 @@ func (c *Client) GetLocationAreas(pageURL *string) (LocationAreas, error) {
 	}
 	defer response.Body.Close()
 
-	
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Println(err)
@@ -60,6 +76,9 @@ func (c *Client) GetLocationAreas(pageURL *string) (LocationAreas, error) {
 		log.Println("Failed to unmarshal response from pokeapi. Try again later")
 		return LocationAreas{}, err
 	}
+
+	// save to cache
+	c.cache.Add(fullURL, body)
 
 	return locationAreasResponse, nil
 }
