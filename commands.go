@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"math/rand"
 	"os"
 )
 
@@ -61,75 +59,5 @@ func commandHelp(config *config, arguments []string) error {
 
 func commandExit(config *config, arguments []string) error {
 	os.Exit(0)
-	return nil
-}
-
-func commandMap(cfg *config, arguments []string) error {
-	locationAreas, err := cfg.pokeApiClient.GetLocationAreas(cfg.nextUrl)
-	if err != nil {
-		return err
-	}
-	// Update urlTracker to have a new next and previous
-	cfg.nextUrl = locationAreas.Next
-	cfg.previousUrl = locationAreas.Previous
-	// Print out our location areas
-	for _, area := range locationAreas.Results {
-		fmt.Println(area.Name)
-	}
-	return nil
-}
-
-func commandMapBack(cfg *config, arguments []string) error {
-	if cfg.previousUrl == nil {
-		return errors.New("currently on first page of results. no previous results to show")
-	}
-
-	locationAreas, err := cfg.pokeApiClient.GetLocationAreas(cfg.previousUrl)
-	if err != nil {
-		return err
-	}
-	// Update urlTracker to have a new next and previous
-	cfg.nextUrl = locationAreas.Next
-	cfg.previousUrl = locationAreas.Previous
-	// Print out our location areas
-	for _, area := range locationAreas.Results {
-		fmt.Println(area.Name)
-	}
-	return nil
-}
-
-func commandExplore(cfg *config, arguments []string) error {
-	if len(arguments) != 1 {
-		return errors.New("name of a location area must be passed in with command")
-	}
-	locationAreaDetail, err := cfg.pokeApiClient.GetLocationAreaDetails(arguments[0])
-	if err != nil {
-		return err
-	}
-	// Print out pokemons found in the area
-	fmt.Println("Found Pokemon:")
-	for _, pokemon := range locationAreaDetail.PokemonEncounters {
-		fmt.Printf("- %s\n", pokemon.Pokemon.Name)
-	}
-	return nil
-}
-
-func commandCatch(cfg *config, arguments []string) error {
-	if len(arguments) != 1 {
-		return errors.New("only one pokemon name should be passed in with command")
-	}
-	pokemon, err := cfg.pokeApiClient.GetPokemonData(arguments[0])
-	if err != nil {
-		return err
-	}
-	// Attempt to help user catch specified pokemon
-	fmt.Printf("Throwing a Pokeball at %s...\n", arguments[0])
-	captureChance := rand.Intn(pokemon.BaseExperience)
-	if captureChance >= (pokemon.BaseExperience / 2) {
-		fmt.Printf("%s was caught!\n", arguments[0])
-		cfg.pokedex[arguments[0]] = pokemon
-	} else {
-		fmt.Printf("%s escaped!\n", arguments[0])
-	}
 	return nil
 }
