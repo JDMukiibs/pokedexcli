@@ -9,7 +9,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(config *config) error
+	callback    func(cfg *config, arguments []string) error
 }
 
 func getCommandMap() map[string]cliCommand {
@@ -42,7 +42,7 @@ func getCommandMap() map[string]cliCommand {
 	}
 }
 
-func commandHelp(config *config) error {
+func commandHelp(config *config, arguments []string) error {
 	fmt.Println("\nWelcome to the Pokedex!")
 	fmt.Print("\nUsage:\n\n")
 	commands := getCommandMap()
@@ -53,12 +53,12 @@ func commandHelp(config *config) error {
 	return nil
 }
 
-func commandExit(config *config) error {
+func commandExit(config *config, arguments []string) error {
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, arguments []string) error {
 	locationAreas, err := cfg.pokeApiClient.GetLocationAreas(cfg.nextUrl)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapBack(cfg *config) error {
+func commandMapBack(cfg *config, arguments []string) error {
 	if cfg.previousUrl == nil {
 		return errors.New("currently on first page of results. no previous results to show")
 	}
@@ -92,7 +92,18 @@ func commandMapBack(cfg *config) error {
 	return nil
 }
 
-func commandExplore(config *config) error {
-	// TODO: Implement explore command
-	return errors.New("not implemented")
+func commandExplore(cfg *config, arguments []string) error {
+	if len(arguments) == 0 {
+		return errors.New("name of a location area must be passed in with command")
+	}
+	locationAreaDetail, err := cfg.pokeApiClient.GetLocationAreaDetails(arguments[0])
+	if err != nil {
+		return err
+	}
+	// Print out pokemons found in the area
+	fmt.Println("Found Pokemon:")
+	for _, pokemon := range locationAreaDetail.PokemonEncounters {
+		fmt.Printf("- %s\n", pokemon.Pokemon.Name)
+	}
+	return nil
 }

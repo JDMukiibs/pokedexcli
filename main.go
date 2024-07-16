@@ -29,20 +29,22 @@ func main() {
 
 	for {
 		userInput := getUserInput(scanner)
-		command, ok := commands[userInput]
+		command, ok := commands[userInput[0]]
 		for !ok {
 			log.Println("Unrecognized command. Please enter a recognized command or enter 'help' to see available commands.")
 			userInput = getUserInput(scanner)
-			command, ok = commands[userInput]
+			command, ok = commands[userInput[0]]
 		}
-		err := command.callback(cfg)
+		err := command.callback(cfg, userInput[1:])
 		if err != nil {
 			log.Println(err)
 		}
 	}
 }
 
-func getUserInput(scanner *bufio.Scanner) string {
+// This method returns a list of strings that represent all the user has entered
+// e.g. explore pastoria-city-area -> [explore, pastoria-city-area]
+func getUserInput(scanner *bufio.Scanner) []string {
 	for {
 		fmt.Print("pokedex > ")
 		if scanner.Scan() {
@@ -52,7 +54,7 @@ func getUserInput(scanner *bufio.Scanner) string {
 			}
 			cleanedInput := strings.ToLower(strings.TrimSpace(input))
 			words := strings.Fields(cleanedInput)
-			return words[0]
+			return words
 		} else {
 			inputError := scanner.Err()
 			if inputError != nil {
