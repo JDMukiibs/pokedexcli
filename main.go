@@ -15,6 +15,7 @@ type config struct {
 	pokeApiClient pokeapi.Client
 	previousUrl   *string
 	nextUrl       *string
+	pokedex       map[string]pokeapi.PokemonData
 }
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 	pokeApiClient := pokeapi.NewClient(5*time.Second, 5*time.Minute)
 	cfg := &config{
 		pokeApiClient: pokeApiClient,
+		pokedex: make(map[string]pokeapi.PokemonData),
 	}
 	log.SetPrefix("Pokedex: ")
 	log.SetFlags(0)
