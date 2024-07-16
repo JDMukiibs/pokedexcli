@@ -34,17 +34,17 @@ func getCommandMap() map[string]cliCommand {
 			callback:    commandMapBack,
 		},
 		"explore": {
-			name:        "explore",
+			name:        "explore [location_name]",
 			description: "Takes the name of a location area as an argument and lists all of the Pokémon in the requested area",
 			callback:    commandExplore,
 		},
 		"catch": {
-			name:        "catch",
+			name:        "catch [pokemon_name]",
 			description: "Takes the name of a Pokemon as an argument and attempts to add them to your Pokedex",
 			callback:    commandCatch,
 		},
 		"inspect": {
-			name:        "inspect",
+			name:        "inspect [pokemon_name]",
 			description: "Takes the name of a Pokemon as an argument and prints name, height, weight, stats, and type(s) of the Pokemon",
 			callback:    commandInspect,
 		},
