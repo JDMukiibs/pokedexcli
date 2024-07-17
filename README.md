@@ -41,7 +41,8 @@ It allows users to explore the Pokemon world through various commands:
     ![image](https://github.com/user-attachments/assets/d53a85a0-22c9-440a-bcca-0f1e1c5b3b29)
 - **exit**: Terminates the application and exits the Pokedex.
 - **map**: Shows the names of 20 location areas in the Pokemon world. Each subsequent call displays the next 20 locations, providing a way to navigate through the list.
-    ![image](https://github.com/user-attachments/assets/4f6c18a7-0b1e-4e4c-968d-708ce3df397e)
+
+  ![image](https://github.com/user-attachments/assets/4f6c18a7-0b1e-4e4c-968d-708ce3df397e)
 - **mapb**: Displays the previous 20 locations visited through the "map" command, allowing users to go back in their exploration history.
 - **explore [location name]**: Takes the name of a specific location area as input and lists all the Pokemon found in that area.
 - **catch [pokemon name]**: Attempts to "catch" a Pokemon by adding its name to the user's Pokedex.
