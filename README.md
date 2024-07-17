@@ -52,6 +52,6 @@ It allows users to explore the Pokemon world through various commands:
 
 ## Upcoming Features:
 
-- **Cycling Through Commands**: Support for the "up" arrow to cycle through previous commands. Being a developer, I found myself hitting that key but it was not cycling 😆 so I'll try to add this first.
-- **Progress Saving**: Persist a user's Pokedex to their computer so they can save progress between sessions
-- **More Test Coverage**: Simply put, it's just for me to practice more with writing tests in Go. It's really low priority-ish for me though for now
+- [x] **Cycling Through Commands**: Support for the "up" arrow to cycle through previous commands. Being a developer, I found myself hitting that key but it was not cycling 😆. This has been added so happy cycling instead of typing the command again
+- [ ] **Progress Saving**: Persist a user's Pokedex to their computer so they can save progress between sessions
+- [ ] **More Test Coverage**: Simply put, it's just for me to practice more with writing tests in Go. It's really low priority-ish for me though for now
